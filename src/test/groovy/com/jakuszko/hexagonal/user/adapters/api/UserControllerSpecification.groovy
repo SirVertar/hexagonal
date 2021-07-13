@@ -24,7 +24,7 @@ class UserControllerSpecification extends IntegrationTest {
 
     def "should get user"() {
         given:
-        User user = withUser()
+        def user = aUserExists()
         String userId = String.valueOf(user.getId())
 
         when:
@@ -41,7 +41,7 @@ class UserControllerSpecification extends IntegrationTest {
 
     def "should change name"() {
         given:
-        User user = withUser()
+        def user = aUserExists()
         String userId = String.valueOf(user.getId())
 
         when:
@@ -57,5 +57,18 @@ class UserControllerSpecification extends IntegrationTest {
                 .jsonPath('$.name').isEqualTo(changedName)
                 .jsonPath('$.surname').isEqualTo(user.getSurname())
                 .jsonPath('$.address').isEqualTo(user.getAddress())
+    }
+
+    def aUserExists() {
+        def user = createSampleUser()
+        return userRepositoryFacade.saveUser(user)
+    }
+
+    static def createSampleUser() {
+        return User.builder()
+                .id(null)
+                .name('Mateusz')
+                .surname('Jakuszko')
+                .address('Kraszewskiego').build()
     }
 }

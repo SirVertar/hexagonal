@@ -10,10 +10,6 @@ class UserFacadeSpecification extends UnitTest {
     InMemoryUserRepository userRepository = new InMemoryUserRepository()
     UserFacade userFacade = new UserFacade(userRepository)
 
-    def cleanup() {
-        userRepository.cleanRepository()
-    }
-
     def "should save user"() {
         when:
         User user = User.builder()
@@ -32,8 +28,7 @@ class UserFacadeSpecification extends UnitTest {
 
     def "should get user"() {
         given:
-        userRepository.withUser()
-        User user = userRepository.getUsers()[0]
+        def user = aUserExists()
 
         when:
         User fetchedUser = userFacade.getUser(user.getId())
@@ -47,8 +42,7 @@ class UserFacadeSpecification extends UnitTest {
 
     def "should change name of a user"() {
         given:
-        userRepository.withUser()
-        User user = userRepository.getUsers()[0]
+        def user = aUserExists()
 
         when:
         userFacade.changeUserName(user.getId(), "Katarzyna")
@@ -59,8 +53,7 @@ class UserFacadeSpecification extends UnitTest {
 
     def "shouldn't change name of user because of name consist of digits"() {
         given:
-        userRepository.withUser()
-        User user = userRepository.getUsers()[0]
+        def user = aUserExists()
 
         when:
         userFacade.changeUserName(user.getId(), name)
@@ -74,8 +67,7 @@ class UserFacadeSpecification extends UnitTest {
 
     def "shouldn't change name of user because of that name is toShort"() {
         given:
-        userRepository.withUser()
-        User user = userRepository.getUsers()[0]
+        def user = aUserExists()
 
         when:
         userFacade.changeUserName(user.getId(), name)
@@ -85,5 +77,18 @@ class UserFacadeSpecification extends UnitTest {
 
         where:
         name << ['Mat', 'a', 'Mate']
+    }
+
+    def aUserExists() {
+        def user = createSampleUser()
+        return userRepository.saveUser(user)
+    }
+
+    static def createSampleUser() {
+        return User.builder()
+                .id(null)
+                .name('Mateusz')
+                .surname('Jakuszko')
+                .address('Kraszewskiego').build()
     }
 }

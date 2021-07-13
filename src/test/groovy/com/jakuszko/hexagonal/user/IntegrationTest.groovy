@@ -2,7 +2,6 @@ package com.jakuszko.hexagonal.user
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.jakuszko.hexagonal.user.adapters.userdb.JpaUserRepositoryFacade
-import com.jakuszko.hexagonal.user.domain.User
 import groovy.transform.NamedParam
 import groovy.transform.NamedVariant
 import org.springframework.beans.factory.annotation.Autowired
@@ -28,18 +27,6 @@ class IntegrationTest extends Specification {
         webClient = WebTestClient.bindToServer()
                 .baseUrl('http://localhost:8080')
                 .build()
-    }
-
-    def cleanup() {
-        userRepositoryFacade.deleteAllUsers()
-    }
-
-    User withUser() {
-        return userRepositoryFacade.saveUser(User.builder()
-                .id(null)
-                .name('Mateusz')
-                .surname('Jakuszko')
-                .address('Kraszewskiego').build())
     }
 
     @NamedVariant
