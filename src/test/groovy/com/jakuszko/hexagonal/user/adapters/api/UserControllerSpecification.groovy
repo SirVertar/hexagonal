@@ -1,61 +1,61 @@
 package com.jakuszko.hexagonal.user.adapters.api
 
-
 import com.jakuszko.hexagonal.user.IntegrationTest
-import org.springframework.http.MediaType
+import com.jakuszko.hexagonal.user.domain.User
 import org.springframework.test.web.reactive.server.WebTestClient
-import reactor.core.publisher.Mono
 
 class UserControllerSpecification extends IntegrationTest {
 
     def "should post user"() {
         when:
-        String userRequest = '{"name":"Marcin", "surname":"Wloszynski", "address":"Poznan"}'
-        WebTestClient.ResponseSpec responseSpec = webClient.post().uri("/users")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .body(Mono.just(userRequest), String)
-                .exchange()
+        WebTestClient.ResponseSpec responseSpec = postRequest(
+                url: '/users',
+                request: [name: "Marcin", surname: "Wloszynski", address: "Poznan"]
+        )
 
         then:
         responseSpec.expectStatus().isOk()
-        responseSpec.expectBody().json('{"name":"Marcin", "surname":"Wloszynski", "address":"Poznan"}')
-
+        responseSpec.expectBody()
+                .jsonPath('$.id').isNotEmpty()
+                .jsonPath('$.name').isEqualTo("Marcin")
+                .jsonPath('$.surname').isEqualTo("Wloszynski")
+                .jsonPath('$.address').isEqualTo("Poznan")
     }
 
     def "should get user"() {
         given:
-        String userId = String.valueOf(createdUser.getId())
+        User user = withUser()
+        String userId = String.valueOf(user.getId())
 
         when:
-        WebTestClient.ResponseSpec responseSpec = webClient.get()
-                .uri(uriBuilder -> uriBuilder.path("/users/{id}").build(userId))
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
+        WebTestClient.ResponseSpec responseSpec = getRequest(url: String.format("/users/%s", userId))
 
         then:
-        def expectedJson = '{\"id\":' + userId + ',' + '"name":"Mateusz", "surname":"Jakuszko", "address":"Kraszewskiego"}'
         responseSpec.expectStatus().isOk()
-        responseSpec.expectBody().json(expectedJson)
+        responseSpec.expectBody()
+                .jsonPath('$.id').isEqualTo(userId)
+                .jsonPath('$.name').isEqualTo(user.getName())
+                .jsonPath('$.surname').isEqualTo(user.getSurname())
+                .jsonPath('$.address').isEqualTo(user.getAddress())
     }
 
     def "should change name"() {
         given:
-        String userId = String.valueOf(createdUser.getId())
+        User user = withUser()
+        String userId = String.valueOf(user.getId())
 
         when:
-        String userRequest = '{\"id\":' + userId + ',' + '"name":"Marcin", "surname":"Jakuszko", "address":"Kraszewskiego"}'
-        webClient.put().uri("/users")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
-                .body(Mono.just(userRequest), String)
-                .exchange()
+        String changedName = "Bartosz"
+        putRequest(
+                url: String.format("/users/%s/name/%s", userId, changedName)
+        )
 
         then:
-        webClient.get()
-                .uri(uriBuilder -> uriBuilder.path("/users/{id}").build(userId))
-                .accept(MediaType.APPLICATION_JSON)
-                .exchange()
-                .expectBody().json(userRequest)
+        getRequest(
+                url: String.format("/users/%s", userId)).expectBody()
+                .jsonPath('$.id').isEqualTo(userId)
+                .jsonPath('$.name').isEqualTo(changedName)
+                .jsonPath('$.surname').isEqualTo(user.getSurname())
+                .jsonPath('$.address').isEqualTo(user.getAddress())
     }
 }

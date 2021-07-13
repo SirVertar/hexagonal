@@ -10,15 +10,17 @@ class UserFacadeSpecification extends UnitTest {
     InMemoryUserRepository userRepository = new InMemoryUserRepository()
     UserFacade userFacade = new UserFacade(userRepository)
 
+    def cleanup() {
+        userRepository.cleanRepository()
+    }
+
     def "should save user"() {
-        given:
+        when:
         User user = User.builder()
                 .id(321L)
                 .name('Marek')
                 .surname('Witczak')
                 .address('Poznań').build()
-
-        when:
         User savedUser = userFacade.saveUser(user)
 
         then:
@@ -30,7 +32,8 @@ class UserFacadeSpecification extends UnitTest {
 
     def "should get user"() {
         given:
-        User user = getUserFromRepo()
+        userRepository.withUser()
+        User user = userRepository.getUsers()[0]
 
         when:
         User fetchedUser = userFacade.getUser(user.getId())
@@ -44,7 +47,8 @@ class UserFacadeSpecification extends UnitTest {
 
     def "should change name of a user"() {
         given:
-        User user = getUserFromRepo()
+        userRepository.withUser()
+        User user = userRepository.getUsers()[0]
 
         when:
         userFacade.changeUserName(user.getId(), "Katarzyna")
@@ -55,7 +59,8 @@ class UserFacadeSpecification extends UnitTest {
 
     def "shouldn't change name of user because of name consist of digits"() {
         given:
-        User user = getUserFromRepo()
+        userRepository.withUser()
+        User user = userRepository.getUsers()[0]
 
         when:
         userFacade.changeUserName(user.getId(), name)
@@ -64,16 +69,13 @@ class UserFacadeSpecification extends UnitTest {
         thrown(UserNameContainNumbersException)
 
         where:
-        name           | _
-        'Mateusz1'     | _
-        '35324'        | _
-        '32Mat432ds43' | _
-        'Mateu3usz'    | _
+        name << ['Mateusz1', '35324', '32Mat432ds43', 'Mateu3usz']
     }
 
     def "shouldn't change name of user because of that name is toShort"() {
         given:
-        User user = getUserFromRepo()
+        userRepository.withUser()
+        User user = userRepository.getUsers()[0]
 
         when:
         userFacade.changeUserName(user.getId(), name)
@@ -82,15 +84,6 @@ class UserFacadeSpecification extends UnitTest {
         thrown(ShortUserNameException)
 
         where:
-        name   | _
-        'Mat'  | _
-        'a'    | _
-        'Mate' | _
-
-    }
-
-
-    private User getUserFromRepo() {
-        userRepository.getMap().values()[0] as User
+        name << ['Mat', 'a', 'Mate']
     }
 }

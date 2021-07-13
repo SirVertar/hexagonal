@@ -30,4 +30,8 @@ public class JpaUserRepositoryFacade implements UserRepository {
                 .map(UserEntity::mapToUser)
                 .collect(Collectors.toList());
     }
+
+    public void deleteAllUsers() {
+        repository.deleteAll();
+    }
 }

@@ -4,11 +4,9 @@ import com.jakuszko.hexagonal.user.domain.exceptions.ShortUserNameException;
 import com.jakuszko.hexagonal.user.domain.exceptions.UserNameContainNumbersException;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 @Builder
 @Getter
-@Setter
 public class User {
 
     private final Long id;

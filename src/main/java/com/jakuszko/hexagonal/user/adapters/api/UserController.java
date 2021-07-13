@@ -20,23 +20,23 @@ public class UserController {
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     UserResponse saveUser(@RequestBody UserRequest userRequest) {
-        return UserResponse.mapToUserRequest(facade.saveUser(userRequest.mapToUser()));
+        return UserResponse.fromDomain(facade.saveUser(userRequest.mapToUser()));
     }
 
-    @PutMapping()
-    UserResponse changeName(@RequestBody UserRequest userRequest) {
-        return UserResponse.mapToUserRequest(facade.changeUserName(userRequest.getId(), userRequest.getName()));
+    @PutMapping("/{id}/name/{name}")
+    UserResponse changeName(@PathVariable Long id, @PathVariable String name) {
+        return UserResponse.fromDomain(facade.changeUserName(id, name));
     }
 
     @GetMapping("/{id}")
     UserResponse getUser(@PathVariable Long id) {
-        return UserResponse.mapToUserRequest(facade.getUser(id));
+        return UserResponse.fromDomain(facade.getUser(id));
     }
 
     @GetMapping()
     List<UserResponse> getUsers() {
         return facade.getUsers().stream()
-                .map(UserResponse::mapToUserRequest)
+                .map(UserResponse::fromDomain)
                 .collect(Collectors.toList());
     }
 }

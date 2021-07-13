@@ -8,12 +8,7 @@ class InMemoryUserRepository implements UserRepository {
     def map = [:]
 
     InMemoryUserRepository() {
-        User user = User.builder()
-        .id(1L)
-        .name('Mateusz')
-        .surname('Jakuszko')
-        .address('Kraszewskiego').build()
-        map.put(user.getId(), user)
+
     }
 
     @Override
@@ -32,7 +27,16 @@ class InMemoryUserRepository implements UserRepository {
         return map.values() as List<User>
     }
 
-    def getMap() {
-        return map
+    def withUser() {
+        User user = User.builder()
+                .id(1L)
+                .name('Mateusz')
+                .surname('Jakuszko')
+                .address('Kraszewskiego').build()
+        map.put(user.getId(), user)
+    }
+
+    def cleanRepository() {
+        map.remove(1L)
     }
 }

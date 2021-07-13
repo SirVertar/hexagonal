@@ -5,6 +5,7 @@ import lombok.*;
 
 @Builder
 @Data
+@Getter
 public class UserResponse {
 
     private final Long id;
@@ -12,7 +13,7 @@ public class UserResponse {
     private final String surname;
     private final String address;
 
-    static UserResponse mapToUserRequest(User user) {
+    static UserResponse fromDomain(User user) {
         return UserResponse.builder()
                 .id(user.getId())
                 .name(user.getName())
