@@ -16,8 +16,20 @@ public class JpaUserRepositoryFacade implements UserRepository {
 
     @Override
     public User saveUser(User user) {
-        return UserEntity.mapToUser(repository.save(UserEntity.mapToEntity(user)));
+        UserEntity userEntity = UserEntity.fromUser(user);
+        if (userEntity.getRespectPoints() == null) {
+            userEntity.setRespectPoints(0L);
+        }
+        return UserEntity.mapToUser(repository.save(userEntity));
+
     }
+
+    @Override
+    public User updateUser(User user) {
+        UserEntity userEntity = UserEntity.fromUser(user);
+        return UserEntity.mapToUser(repository.save(userEntity));
+    }
+
 
     @Override
     public User getUser(Long id) {
@@ -29,9 +41,5 @@ public class JpaUserRepositoryFacade implements UserRepository {
         return repository.findAll().stream()
                 .map(UserEntity::mapToUser)
                 .collect(Collectors.toList());
-    }
-
-    public void deleteAllUsers() {
-        repository.deleteAll();
     }
 }

@@ -39,4 +39,9 @@ public class UserController {
                 .map(UserResponse::fromDomain)
                 .collect(Collectors.toList());
     }
+
+    @PatchMapping("/{id}/add-points")
+    UserResponse addRespectPoint(@PathVariable Long id) {
+        return UserResponse.fromDomain(facade.addRespectPoints(id));
+    }
 }

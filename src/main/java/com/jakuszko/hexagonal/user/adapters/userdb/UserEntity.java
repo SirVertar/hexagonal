@@ -3,10 +3,7 @@ package com.jakuszko.hexagonal.user.adapters.userdb;
 import com.jakuszko.hexagonal.user.domain.User;
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 @Builder
@@ -22,20 +19,25 @@ public class UserEntity {
     private String name;
     private String surname;
     private String address;
+    private Long respectPoints;
+    @Version
+    private Long version;
 
     static User mapToUser(UserEntity userEntity) {
         return User.builder()
                 .id(userEntity.getId())
                 .name(userEntity.getName())
                 .surname(userEntity.getSurname())
-                .address(userEntity.getAddress()).build();
+                .address(userEntity.getAddress())
+                .respectPoints(userEntity.getRespectPoints()).build();
     }
 
-    static UserEntity mapToEntity(User user) {
+    static UserEntity fromUser(User user) {
         return UserEntity.builder()
                 .id(user.getId())
                 .name(user.getName())
                 .surname(user.getSurname())
-                .address(user.getAddress()).build();
+                .address(user.getAddress())
+                .respectPoints(user.getRespectPoints()).build();
     }
 }

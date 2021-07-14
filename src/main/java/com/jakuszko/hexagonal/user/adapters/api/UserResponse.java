@@ -12,12 +12,14 @@ public class UserResponse {
     private final String name;
     private final String surname;
     private final String address;
+    private final Long respectPoints;
 
     static UserResponse fromDomain(User user) {
         return UserResponse.builder()
                 .id(user.getId())
                 .name(user.getName())
                 .surname(user.getSurname())
-                .address(user.getAddress()).build();
+                .address(user.getAddress())
+                .respectPoints(user.getRespectPoints()).build();
     }
 }

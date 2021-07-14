@@ -2,6 +2,7 @@ package com.jakuszko.hexagonal.user.domain;
 
 import com.jakuszko.hexagonal.user.domain.ports.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -9,11 +10,19 @@ import java.util.List;
 public class UserFacade {
 
     private final UserRepository repository;
+    private static final Long RESPECT_POINTS = 100L;
 
     public User changeUserName(Long userId, String name) {
         User user = repository.getUser(userId);
         user.changeName(name);
-        return repository.saveUser(user);
+        return repository.updateUser(user);
+    }
+
+    @Transactional
+    public User addRespectPoints(Long userId) {
+        User user = repository.getUser(userId);
+        user.addRespectPoints(RESPECT_POINTS);
+        return repository.updateUser(user);
     }
 
     public User saveUser(User user) {
