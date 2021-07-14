@@ -18,6 +18,12 @@ class InMemoryUserRepository implements UserRepository {
     }
 
     @Override
+    User updateUser(User user) {
+        map.put(user.getId(), user)
+        return map.get(user.getId()) as User
+    }
+
+    @Override
     User getUser(Long id) {
         return map.get(id) as User
     }

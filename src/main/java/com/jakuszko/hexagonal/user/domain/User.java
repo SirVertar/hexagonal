@@ -13,10 +13,15 @@ public class User {
     private String name;
     private final String surname;
     private final String address;
+    private Long respectPoints;
 
     void changeName(String name) {
         validate(name);
         this.name = name;
+    }
+
+    void addRespectPoints(Long respectPoints) {
+        this.respectPoints += respectPoints;
     }
 
     private void validate(String name) {

@@ -11,12 +11,14 @@ public class UserRequest {
     private final String name;
     private final String surname;
     private final String address;
+    private final Long respectPoints;
 
     User mapToUser() {
         return User.builder()
                 .id(this.getId())
                 .name(this.getName())
                 .surname(this.getSurname())
-                .address(this.getAddress()).build();
+                .address(this.getAddress())
+                .respectPoints(this.respectPoints).build();
     }
 }

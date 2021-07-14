@@ -9,6 +9,8 @@ public interface UserRepository {
 
     User saveUser(User user);
 
+    User updateUser(User user);
+
     User getUser(Long id);
 
     List<User> getUsers();
